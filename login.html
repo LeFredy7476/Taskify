@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="general.css">
+    <style>
+        label {
+            transition: 0.25s;
+            font-weight: 400;
+        }
+        label[for=username]:has( ~ input[name=username]:focus) {
+            font-weight: 900;
+        }
+        label[for=password]:has( ~ input[name=password]:focus) {
+            font-weight: 900;
+        }
+        input {
+            margin-bottom: 2em;
+            min-width: 30ch;
+        }
+        #container-login {
+            font-size: 16px;
+        }
+        h1 {
+            margin-bottom: 1em;
+        }
+        a.standalone:hover {
+            font-weight: 800;
+        }
+    </style>
+</head>
+<body>
+    <main class="center-container fill-space">
+        <div id="container-login" class="vflex card">
+            <h1 class="center-text">Login</h1>
+            <label for="username">username</label>
+            <input type="text" name="username" id="username">
+            <label for="password">password</label>
+            <input type="password" name="password" id="password">
+            <div class="hflex" style="margin-top: 1em;">
+                <a href="#" class="fill-space standalone">Forgot password</a>
+                <button>Login</button>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
