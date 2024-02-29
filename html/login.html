@@ -1,0 +1,35 @@
+<main class="centerdiv">
+    <script>
+        document.body.setAttribute("localisation", "none");
+
+        function login_submit(event) {
+            let username = document.querySelector("#username").value;
+            let password = document.querySelector("#password").value;
+            if (session.login(username, password)) {
+                event.preventDefault();
+                document.querySelector("#username").setAttribute("style", "border-color: var(--menu-magenta)");
+                document.querySelector("#password").setAttribute("style", "border-color: var(--menu-magenta)");
+                document.querySelector("#wrong").setAttribute("style", "opacity: 1");
+                setTimeout(() => {
+                    document.querySelector("#username").removeAttribute("style");
+                    document.querySelector("#password").removeAttribute("style");
+                    document.querySelector("#wrong").setAttribute("style", "opacity: 0");
+                }, 1000);
+            }
+        }
+    </script>
+    <form class="box-draw column-stretch width30 shadow1" onsubmit="login_submit(event)">
+        <h1 class="centertext morph">Se connecter</h1>
+        <h4 class="centertext formwarning" id="wrong" style="opacity: 0">nom d'utilisateur ou mot de passe incorrect</h4>
+        <label class="rot" for="username">nom d'utilisateur</label>
+        <input type="text" name="username" id="username" required class="rot">
+        <label class="rot" for="password">mot de passe</label>
+        <input type="password" name="password" id="password" required class="rot">
+        <div class="flex-row padtop">
+            <a href="#" onclick="preventDefault();alert('tant pis pour toi!')">Mot de passe oublié</a>
+            <div class="grow"></div>
+            <input type="submit" value="Login" class="btn1">
+        </div>
+    </form>
+    <a hx-trigger="click" hx-target="main" hx-swap="outerHTML" hx-get="html/signin.html" class="padtop">&lt;- S'enregitrer</a>
+</main>

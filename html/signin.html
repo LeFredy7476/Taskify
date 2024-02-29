@@ -1,0 +1,42 @@
+<main>
+    <script>
+        document.body.setAttribute("localisation", "none");
+
+        function signin(event) {
+            let username = document.querySelector("#username").value;
+            let password = document.querySelector("#password").value;
+            let name = document.querySelector("#name").value;
+            let lastname = document.querySelector("#lastname").value;
+            let email = document.querySelector("#email").value;
+            if (session.signin(name, lastname, username, email, password)) {
+                event.preventDefault();
+                document.querySelector("#username").setAttribute("style", "border-color: var(--menu-magenta)");
+                document.querySelector("#wrong").setAttribute("style", "opacity: 1");
+                setTimeout(() => {
+                    document.querySelector("#username").removeAttribute("style");
+                    document.querySelector("#wrong").setAttribute("style", "opacity: 0");
+                }, 1000);
+            }
+            console.log(event);
+        }
+    </script>
+    <form class="box-draw column-stretch width30 shadow1" onsubmit="signin(event)">
+        <h1 class="centertext morph">S'enregitrer</h1>
+        <h4 class="centertext formwarning" id="wrong" style="opacity: 0">Nom d'utilisateur déjà utilisé</h4>
+        <label class="rot" for="name">prenom</label>
+        <input type="text" name="name" id="name" required class="rot">
+        <label class="rot" for="lastname">nom</label>
+        <input type="text" name="lastname" id="lastname" required class="rot">
+        <label class="rot" for="username">nom d'utilisateur</label>
+        <input type="text" name="username" id="username" required class="rot">
+        <label class="rot" for="email">courriel</label>
+        <input type="email" name="email" id="email" required class="rot">
+        <label class="rot" for="password">mot de passe</label>
+        <input type="password" name="password" id="password" required class="rot">
+        <div class="flex-row padtop">
+            <div class="grow"></div>
+            <input type="submit" value="Sign In" class="btn1">
+        </div>
+    </form>
+    <a hx-trigger="click" hx-target="main" hx-swap="outerHTML" hx-get="html/login.html" class="padtop">Se connecter -></a>
+</main>

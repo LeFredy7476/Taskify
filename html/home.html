@@ -1,0 +1,30 @@
+<main class="centerdiv">
+    <script>
+        document.body.setAttribute("localisation", "home");
+
+        function home_menu() {
+            if (session.get_logged_in()) {
+                document.querySelector("#homemenu2").removeAttribute("style")
+            } else {
+                document.querySelector("#homemenu1").removeAttribute("style")
+            }
+            
+        }
+    </script>
+    <h1 class="morph centertext">Taskify</h1>
+    <p>Bienvenue</p>
+    <div id="homemenu1" style="display: none;">
+        <button class="btn1" hx-trigger="click" hx-target="main" hx-swap="outerHTML" hx-get="html/login.html">Se connecter</button>
+        <button class="btn1" hx-trigger="click" hx-target="main" hx-swap="outerHTML" hx-get="html/signin.html">S'enregitrer</button>
+    </div>
+    <div id="homemenu2" style="display: none;">
+        <div class="material-symbols-rounded">
+            person
+        </div>
+        <button class="btn1" onclick="session.load_tasks()">Charger</button>
+        <button class="btn1" onclick="session.save_tasks()">Sauvegarder</button>
+    </div>
+    <script>
+        home_menu();
+    </script>
+</main>

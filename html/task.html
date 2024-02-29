@@ -1,0 +1,271 @@
+<main class="column-stretch">
+    <script>
+        document.body.setAttribute("localisation", "task");
+
+        function add_zero_before(n) {
+            let r = n.toString()
+            if (r.length == 1) {
+                r = "0" + r
+            }
+            return r
+        }
+
+        function time_before(date) {
+            let diff = date - Date.now();
+            let units = [" an", " moi", " semaine", " jour", " heure", " minute", " seconde"];
+            let scales = [31536000000, 2592000000, 604800000, 86400000, 3600000, 60000, 1000];
+            let absdiff = Math.abs(diff);
+            let nb;
+            let unit;
+            let priority;
+            if (absdiff > scales[0]) {
+                unit = units[0];
+                nb = Math.floor(absdiff / scales[0]);
+                priority = 0;
+            } else if (absdiff >= scales[1]) {
+                unit = units[1];
+                nb = Math.floor(absdiff / scales[1]);
+                priority = 1;
+            } else if (absdiff >= scales[2]) {
+                unit = units[2];
+                nb = Math.floor(absdiff / scales[2]);
+                priority = 2;
+            } else if (absdiff >= scales[3]) {
+                unit = units[3];
+                nb = Math.floor(absdiff / scales[3]);
+                priority = 3;
+            } else if (absdiff >= scales[4]) {
+                unit = units[4];
+                nb = Math.floor(absdiff / scales[4]);
+                priority = 4;
+            } else if (absdiff >= scales[5]) {
+                unit = units[5];
+                nb = Math.floor(absdiff / scales[5]);
+                priority = 5;
+            } else {
+                unit = units[6];
+                nb = Math.floor(absdiff / scales[6]);
+                priority = 6;
+            }
+            if (nb > 1) {
+                unit += "s";
+            }
+            let label;
+            if (diff >= 0) {
+                label = "dû dans ";
+            } else {
+                label = "en retard de ";
+                priority = -1;
+            }
+            return [priority, label + "<strong>" + nb + "</strong>" + unit]
+        }
+
+        function scheduled(event) {
+            let scheduledval = document.querySelector("input#scheduled").checked;
+            let datedue = document.querySelector("input#datedue");
+            let now = new Date(Date.now());
+            if (datedue.value == "") {datedue.value = now.toLocaleDateString('en-CA')};
+            let timedue = document.querySelector("input#timedue");
+            if (timedue.value == "") {timedue.value = add_zero_before(now.getHours()) + ":" + add_zero_before(now.getMinutes())};
+
+            if (scheduledval) {
+                datedue.removeAttribute("disabled");
+                timedue.removeAttribute("disabled");
+            } else {
+                datedue.setAttribute("disabled", "true");
+                timedue.setAttribute("disabled", "true");
+            }
+        }
+
+        function append_task() {
+            let elname = document.querySelector("#newtask");
+            elname.focus();
+            if (elname.value != "") {
+                scheduled();
+                let elcategory = document.querySelector("#taskcategory");
+                let elscheduled = document.querySelector("#scheduled");
+                let eldate = document.querySelector("#datedue");
+                let eltime = document.querySelector("#timedue");
+                let name = elname.value;
+                let id = Date.now();
+                elname.value = "";
+                elname.focus();
+                let category = elcategory.value;
+                let iscategory = category != "default";
+                if (!iscategory) {
+                    category = null;
+                }
+                let isscheduled = elscheduled.checked;
+                let date = null;
+                if (isscheduled) {
+                    date = Date_from_input(eldate, eltime);
+                }
+                let task = {
+                    id: id,
+                    name: name,
+                    date: date,
+                    category: category,
+                    done: false
+                };
+                let tasks = session.get_tasks();
+                tasks[id] = task;
+                session.set_tasks(tasks);
+                elscheduled.checked = false;
+                scheduled();
+            }
+            refresh_tasklist();
+        }
+
+        function refresh_tasklist() {
+            let tasks = session.get_tasks();
+            let taskl = "";
+            let donel = "";
+            
+            for (let key in tasks) {
+                let task = tasks[key];
+                let r = time_before(task.date);
+                let priority = r[0];
+                let timetext = r[1];
+                if (task.done) {
+                    donel += `<div class="task" task-time="${task.date !== null}" task-category="${task.category !== null}" task-id="${task.id}">
+                        <span class="taskname">${task.name}</span>
+                        <span class="taskcategory">${task.category}</span>
+                        <span class="taskwarning">${timetext}</span>
+                        <button class="material-symbols-rounded taskbtn taskbtnundo" onclick="task_undo(this)">undo</button>
+                        <button class="material-symbols-rounded taskbtn taskbtninfo" onclick="show_info(this)">info</button>
+                        <button class="material-symbols-rounded taskbtn taskbtndelete" onclick="task_delete(this)">close</button>
+                        </div>`;
+                } else {
+                    taskl += `<div class="task" task-time="${task.date !== null}" task-category="${task.category !== null}" task-id="${task.id}" task-priority="${priority}">
+                        <span class="taskname">${task.name}</span>
+                        <span class="taskcategory">${task.category}</span>
+                        <span class="taskwarning">${timetext}</span>
+                        <button class="material-symbols-rounded taskbtn taskbtndone" onclick="task_done(this)">done</button>
+                        <button class="material-symbols-rounded taskbtn taskbtninfo" onclick="show_info(this)">info</button>
+                        <button class="material-symbols-rounded taskbtn taskbtndelete" onclick="task_delete(this)">close</button>
+                        </div>`;
+                }
+            }
+            let tasklist = document.querySelector("#tasklist");
+            let donelist = document.querySelector("#donelist");
+            if (tasklist) {
+                tasklist.innerHTML = taskl;
+            }
+            if (donelist) {
+                donelist.innerHTML = donel;
+            }
+            
+        }
+
+        function light_refresh_tasklist() {
+            let tasklist = document.querySelector("#tasklist");
+            if (tasklist) {
+                let alltask = tasklist.querySelectorAll(".task");
+                for (const taskelem of alltask) {
+                    let id = taskelem.getAttribute("task-id");
+                    let tasks = session.get_tasks();
+                    if (Object.keys(tasks).indexOf(id) !== -1) {
+                        let task = tasks[id];
+                        let r = time_before(task.date);
+                        let priority = r[0];
+                        let timetext = r[1];
+                        taskelem.querySelector(".taskwarning").innerHTML = timetext;
+                        taskelem.setAttribute("task-priority", priority);
+                    }
+                }
+            }
+        }
+
+        function task_done(self) {
+            let parent = self.parentElement;
+            let id = parent.getAttribute("task-id");
+            let tasks = session.get_tasks();
+            tasks[id].done = true;
+            session.set_tasks(tasks);
+            refresh_tasklist();
+        }
+        function task_undo(self) {
+            let parent = self.parentElement;
+            let id = parent.getAttribute("task-id");
+            let tasks = session.get_tasks();
+            tasks[id].done = false;
+            session.set_tasks(tasks);
+            refresh_tasklist();
+        }
+        function task_delete(self) {
+            let parent = self.parentElement;
+            let id = parent.getAttribute("task-id");
+            let tasks = session.get_tasks();
+            delete tasks[id];
+            session.set_tasks(tasks);
+            refresh_tasklist();
+        }
+
+        function show_info(self) {
+            let parent = self.parentElement;
+            let id = parent.getAttribute("task-id");
+            let tasks = session.get_tasks();
+            document.querySelector("#taskinfoname").innerHTML = tasks[id].name;
+            document.querySelector("#taskinfo-creation").innerHTML = Date(tasks[id].id).split("(")[0];
+            if (tasks[id].date === null) {document.querySelector("#taskinfo-schedule").innerHTML = "Aucune"}
+            else {document.querySelector("#taskinfo-schedule").innerHTML = Date(tasks[id].date).split("(")[0]}
+            document.querySelector("#taskinfo-status").innerHTML = tasks[id].done ? "Complété":"À faire";
+            document.querySelector("#taskinfo-status").style.color = tasks[id].done ? "var(--accent1)":"var(--accent3)";
+            document.querySelector("#taskinfo-category").innerHTML = tasks[id].category === null ? "Catégorie par défaut" : tasks[id].category;
+            document.querySelector("#taskinfo-id").innerHTML = tasks[id].id;
+            document.querySelector("#taskinfo").setAttribute("show", "true");
+        }
+        function close_info() {
+            document.querySelector("#taskinfo").setAttribute("show", "false");
+        }
+    </script>
+    <script>
+        refresh_tasklist();
+        function refresh() {
+            light_refresh_tasklist();
+            setInterval(light_refresh_tasklist, 200);
+        }
+        refresh();
+    </script>
+    <div id="taskinfo" show="false" class="column-stretch">
+        <h1 class="morph centertext" id="taskinfoname">Nom</h1>
+        <button class="material-symbols-rounded" id="info-closebtn" onclick="close_info()">close</button>
+        <div class="infogrid">
+            <span class="infolbl">Date de création</span><span id="taskinfo-creation">information</span>
+            <span class="infolbl">Date limite</span><span id="taskinfo-schedule">création</span>
+            <span class="infolbl">Status</span><span id="taskinfo-status">status</span>
+            <span class="infolbl">Catégorie</span><span id="taskinfo-category">catégorie</span>
+            <span class="infolbl">Identifiant</span><span id="taskinfo-id">identifiant</span>
+        </div>
+    </div>
+    <h1 class="morph centertext">Tâches</h1>
+    <div id="addtaskblock">
+        <input type="checkbox" name="advanced" id="advanced" style="display: none;">
+        <div id="newtaskbar">
+            <div class="flex-row">
+                <input type="text" name="newtask" class="grow" id="newtask" autocomplete="off" required>
+                <button class="btn3" id="addtask" onclick="append_task()">+</button>
+            </div>
+            <div id="advanceddiv">
+                <select name="taskcategory" id="taskcategory">
+                    <option value="default">Catégorie par défaut</option>
+                    <option value="Personnel">Personnel</option>
+                    <option value="Travail">Travail</option>
+                    <option value="Rappel">Rappel</option>
+                    <option value="Événement">Événement</option>
+                </select>
+                <div class="flex-row" style="justify-content: flex-end;">
+                    <input type="checkbox" name="scheduled" id="scheduled" onchange="scheduled()">
+                    <label for="scheduled" id="scheduledlbl">programmé</label>
+                    <input type="date" name="datedue" id="datedue" disabled>
+                    <input type="time" name="timedue" id="timedue" disabled>
+                </div>
+            </div>
+        </div>
+        <label for="advanced" class="centertext" id="advancedlbl">advanced options</label>
+    </div>
+    <h2 class="centertext">Tâches</h2>
+    <div class="tasklist" id="tasklist"></div>
+    <h2 class="centertext">Tâches Complétés</h2>
+    <div class="tasklist" id="donelist"></div>
+</main>

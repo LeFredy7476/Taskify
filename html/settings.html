@@ -1,0 +1,19 @@
+<main class="centerdiv">
+    <script>
+        document.body.setAttribute("localisation", "settings");
+    </script>
+    <h1 class="morph centertext">Taskify</h1>
+    <p>Fait par Frédérick Forget</p>
+    <p>version 0.7</p>
+    <div class="flex-row">
+        <button class="btn1 redglow" onclick="session.logout(); location.reload()">Se déconnecter</button>
+    </div>
+    <h3>Thèmes de couleur</h3>
+    <div class="flex-row">
+        <button class="btn5" onclick="document.querySelector(':root').setAttribute('theme', 0)" style="border-color: #10eda0ff; background-color: #010036ff;"></button>
+        <button class="btn5" onclick="document.querySelector(':root').setAttribute('theme', 3)" style="border-color: #8f8; background-color: #222;"></button>
+        <button class="btn5" onclick="document.querySelector(':root').setAttribute('theme', 1)" style="border-color: #ffe490ff; background-color: #003e42ff;"></button>
+        <button class="btn5" onclick="document.querySelector(':root').setAttribute('theme', 4)" style="border-color: #8ff; background-color: #555;"></button>
+        <button class="btn5" onclick="document.querySelector(':root').setAttribute('theme', 2)" style="border-color: #68c0e8ff; background-color: #1d0a55ff;"></button>
+    </div>
+</main>
