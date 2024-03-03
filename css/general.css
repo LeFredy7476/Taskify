@@ -971,6 +971,7 @@ select {
     text-align: center;
     font-weight: 700;
     transform: scale(1);
+    font-variation-settings: 'FILL' 1, 'GRAD' 0, 'opsz' 24;
 }
 #info-closebtn {
     position: absolute;
