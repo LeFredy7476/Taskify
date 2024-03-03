@@ -17,8 +17,18 @@
     <script src="js/general.js"></script>
 </head>
 <body localisation="none" theme="0">
+    <input type="checkbox" name="show-nav" id="show-nav" style="display: none;">
     <header></header>
+    <!-- side menu -->
+    <nav>
+        <label class="material-symbols-rounded" for="show-nav" id="navbtn">menu</label>
+        <h1 class="morph centertext">Taskify</h1>
+        <span class="label">Nombre de tâches</span><span id="recap-nb">-</span>
+        <span class="label">Tâches complétés</span><span id="recap-nbdone">-</span>
+        <span class="label">Tâches à faire</span><span id="recap-nbtodo">-</span>
+    </nav>
     <main class="centerdiv" hx-trigger="load" hx-target="main" hx-swap="outerHTML" hx-get="html/home.html"></main>
+    <!-- onglet en bas -->
     <footer>
         <button class="btn2 task-btn" hx-trigger="click" hx-target="main" hx-swap="outerHTML" hx-get="html/task.html">Task</button>
         <button class="btn2 home-btn" hx-trigger="click" hx-target="main" hx-swap="outerHTML" hx-get="html/home.html">Home</button>

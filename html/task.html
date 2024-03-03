@@ -1,7 +1,8 @@
 <main class="column-stretch">
     <script>
         document.body.setAttribute("localisation", "task");
-        
+        document.querySelector("#show-nav").checked = false;
+
         refresh_tasklist();
         function refresh() {
             light_refresh_tasklist();
@@ -9,9 +10,11 @@
         }
         refresh();
     </script>
+    <!-- popup d'info -->
     <div id="taskinfo" show="false" class="column-stretch">
         <h1 class="morph centertext" id="taskinfoname">Nom</h1>
         <button class="material-symbols-rounded" id="info-closebtn" onclick="close_info()">close</button>
+        <button class="material-symbols-rounded" id="info-modifybtn" onclick="modify_info()">edit</button>
         <div class="infogrid">
             <span class="infolbl">Date de création</span><span id="taskinfo-creation">information</span>
             <span class="infolbl">Date limite</span><span id="taskinfo-schedule">création</span>
@@ -20,6 +23,7 @@
             <span class="infolbl">Identifiant</span><span id="taskinfo-id">identifiant</span>
         </div>
     </div>
+    <!-- block pour ajout de tâche -->
     <h1 class="morph centertext">Tâches</h1>
     <div id="addtaskblock">
         <input type="checkbox" name="advanced" id="advanced" style="display: none;">
@@ -27,6 +31,21 @@
             <div class="flex-row">
                 <input type="text" name="newtask" class="grow" id="newtask" autocomplete="off" required>
                 <button class="btn3" id="addtask" onclick="append_task()">+</button>
+                <script>
+                    document.querySelector("#newtask").addEventListener("keydown", function(event) {
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            document.querySelector("#addtask").setAttribute("down", "true");
+                        }
+                    });
+                    document.querySelector("#newtask").addEventListener("keyup", function(event) {
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            append_task();
+                            document.querySelector("#addtask").removeAttribute("down");
+                        }
+                    });
+                </script>
             </div>
             <div id="advanceddiv">
                 <select name="taskcategory" id="taskcategory">
@@ -46,6 +65,7 @@
         </div>
         <label for="advanced" class="centertext" id="advancedlbl">advanced options</label>
     </div>
+    <!-- liste de tâches -->
     <h2 class="centertext">Tâches</h2>
     <div class="tasklist" id="tasklist"></div>
     <h2 class="centertext">Tâches Complétés</h2>

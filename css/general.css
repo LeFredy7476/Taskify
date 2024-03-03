@@ -433,6 +433,70 @@ input {
 .shadow1 {
     box-shadow: -20px 20px 0px 0px #0002;
 }
+
+nav {
+    width: 20em;
+    position: absolute;
+    height: 100vh;
+    left: -20em;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1ch;
+    z-index: 9999;
+    background-color: var(--bg0);
+    align-content: start;
+    padding: 2em 2em;
+}
+
+
+
+#show-nav:checked ~ nav {
+    left: 0em;
+}
+
+nav label#navbtn {
+    position: absolute;
+    font-size: 1.5em;
+    height: 2em;
+    background-color: var(--bg0);
+    color: var(--fg1);
+    width: 4em;
+    top: 1em;
+    right: -3em;
+    padding: 0.5em 1em 0.5em 2em;
+    border-radius: 1em;
+    font-weight: 700;
+}
+
+nav label#navbtn:hover {
+    color: var(--accent1);
+}
+
+#show-nav:checked ~ nav label#navbtn {
+    right: 0em;
+    width: 4em;
+    padding: 0.5em 1.5em 0.5em 1.5em;
+    color: var(--accent1);
+}
+
+body:not([localisation=task]) nav {
+    left: -26em !important;
+}
+
+nav h1 {
+    grid-row: 1;
+    grid-column: 1/3;
+}
+
+nav span.label {
+    grid-column: 1;
+    text-align: right;
+}
+nav span:not(.label) {
+    grid-column: 2;
+    text-align: left;
+}
+
 header {
     background-color: var(--bg1);
     position: absolute;
@@ -536,16 +600,16 @@ main::-webkit-scrollbar {
     height: 1.2em;
     transition: 0.25s ease border-color, 0.7s ease-out box-shadow;
     z-index: 0;
-    box-shadow: 0px 0px 0px 10em var(--bg2), 0px 0px 0px 20em transparent;
+    box-shadow: 0px 0px 50px 14em var(--bg2), 0px 0px 0px 20em transparent;
 }
 .btn3:hover {
     border-color: var(--accent1);
     transition: 0.25s ease border-color, 0.7s ease-out box-shadow;
 }
-.btn3:active {
+.btn3:active, .btn3[down=true] {
     transition: 0s ease;
     border-color: var(--fg2);
-    box-shadow: 0px 0px 0px 0em var(--accent1), 0px 0px 0px 20em transparent;
+    box-shadow: 0px 0px 50px -25px var(--accent1), 0px 0px 0px 20em transparent;
 }
 
 #advanced ~ div input#datedue, 
@@ -893,6 +957,21 @@ select {
     opacity: 1;
 }
 
+#info-modifybtn {
+    position: absolute;
+    top: 24px;
+    right: 96px;
+    height: 48px;
+    width: 48px;
+    border: none;
+    background-color: var(--bg3);
+    color: var(--bg2);
+    border-radius: 24px;
+    font-size: 32px;
+    text-align: center;
+    font-weight: 700;
+    transform: scale(1);
+}
 #info-closebtn {
     position: absolute;
     top: 24px;
@@ -908,9 +987,19 @@ select {
     font-weight: 700;
     transform: scale(1);
 }
+#info-modifybtn:hover {
+    background-color: var(--accent2);
+    color: var(--bg2);
+}
 #info-closebtn:hover {
     background-color: var(--accent3);
     color: var(--bg2);
+}
+#info-modifybtn:active {
+    background-color: var(--accent2);
+    color: var(--bg2);
+    transform: scale(0.9);
+    transition: 0s ease;
 }
 #info-closebtn:active {
     background-color: var(--accent3);

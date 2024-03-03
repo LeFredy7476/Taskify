@@ -1,10 +1,11 @@
-
+// réinitialise le json dans le stockage (au cas où quelqu'un s'amuserait à aller supprimer le localStorage/sessionStorage)
 function fix_storage() {
     if (localStorage.getItem("accounts") === null) {localStorage.setItem("accounts", `{}`)}
     if (sessionStorage.getItem("tasks") === null) {sessionStorage.setItem("tasks", `{}`)}
     if (sessionStorage.getItem("info") === null) {sessionStorage.setItem("info", `{"name": null,"lastname": null,"username": null,"email": null,"password": null,"category": []}`)}    
 }
 
+// fonction utilitaire
 function Date_from_input(date_element, time_element) {
     let datestr = date_element.value;
     let timestr = time_element.value;
@@ -12,6 +13,8 @@ function Date_from_input(date_element, time_element) {
     return Date.parse(fullstr);
 }
 
+
+// objet facilitant la gestion de tout ce qui a rapport au stockage (autant local que session)
 var session = {
     login: function(username, password) {
         if (this.is_username_used(username)) {
@@ -99,6 +102,7 @@ var session = {
     },
 }
 
+//  modifie l'affichage de home menu
 function home_menu() {
     if (session.get_logged_in()) {
         document.querySelector("#homemenu2").removeAttribute("style")
@@ -107,6 +111,7 @@ function home_menu() {
     }
 }
 
+// fonction utilitaire
 function add_zero_before(n) {
     let r = n.toString()
     if (r.length == 1) {
@@ -115,6 +120,7 @@ function add_zero_before(n) {
     return r
 }
 
+// fonction utilitaire
 function time_before(date) {
     let diff = date - Date.now();
     let units = [" an", " moi", " semaine", " jour", " heure", " minute", " seconde"];
@@ -165,6 +171,7 @@ function time_before(date) {
     return [priority, label + "<strong>" + nb + "</strong>" + unit]
 }
 
+// permet l'interaction avbec le bouton "programmé"
 function scheduled(event) {
     let scheduledval = document.querySelector("input#scheduled").checked;
     let datedue = document.querySelector("input#datedue");
@@ -182,6 +189,7 @@ function scheduled(event) {
     }
 }
 
+// fonction ajout de tache
 function append_task() {
     let elname = document.querySelector("#newtask");
     elname.focus();
@@ -221,17 +229,24 @@ function append_task() {
     refresh_tasklist();
 }
 
+// permet de rafraichir la liste lors de ajout/retrait de tâche
 function refresh_tasklist() {
     let tasks = session.get_tasks();
     let taskl = "";
     let donel = "";
     
+    let recap_nb = 0;
+    let recap_nbdone = 0;
+    let recap_nbtodo = 0;
+
     for (let key in tasks) {
+        recap_nb += 1;
         let task = tasks[key];
         let r = time_before(task.date);
         let priority = r[0];
         let timetext = r[1];
         if (task.done) {
+            recap_nbdone += 1;
             donel += `<div class="task" task-time="${task.date !== null}" task-category="${task.category !== null}" task-id="${task.id}">
                 <span class="taskname">${task.name}</span>
                 <span class="taskcategory">${task.category}</span>
@@ -241,6 +256,7 @@ function refresh_tasklist() {
                 <button class="material-symbols-rounded taskbtn taskbtndelete" onclick="task_delete(this)">close</button>
                 </div>`;
         } else {
+            recap_nbtodo += 1;
             taskl += `<div class="task" task-time="${task.date !== null}" task-category="${task.category !== null}" task-id="${task.id}" task-priority="${priority}">
                 <span class="taskname">${task.name}</span>
                 <span class="taskcategory">${task.category}</span>
@@ -259,10 +275,14 @@ function refresh_tasklist() {
     if (donelist) {
         donelist.innerHTML = donel;
     }
-    
+    document.querySelector("#recap-nb").innerHTML = recap_nb;
+    document.querySelector("#recap-nbdone").innerHTML = recap_nbdone;
+    document.querySelector("#recap-nbtodo").innerHTML = recap_nbtodo;
 }
 
+// rafraichit le temps restant sur les tâches à chaque 0.2s 
 function light_refresh_tasklist() {
+    fix_storage();
     let tasklist = document.querySelector("#tasklist");
     if (tasklist) {
         let alltask = tasklist.querySelectorAll(".task");
@@ -280,6 +300,8 @@ function light_refresh_tasklist() {
         }
     }
 }
+
+// fonction concernant les tâches
 
 function task_done(self) {
     let parent = self.parentElement;
@@ -327,6 +349,30 @@ function close_info() {
     document.querySelector("#taskinfo").setAttribute("show", "false");
 }
 
+function modify_info() {
+    let id = document.querySelector("#taskinfo-id").innerHTML;
+    document.querySelector("#taskinfo").setAttribute("show", "false");
+    let task = session.get_tasks()[id];
+    let tasks = session.get_tasks();
+    delete tasks[id];
+    session.set_tasks(tasks);
+    if (task.date === null) {
+        document.querySelector("input#scheduled").checked = false;
+    } else {
+        document.querySelector("input#scheduled").checked = true;
+        document.querySelector("input#datedue").value = (new Date(task.date)).toLocaleDateString('en-CA');
+        document.querySelector("input#timedue").value = add_zero_before((new Date(task.date)).getHours()) + ":" + add_zero_before((new Date(task.date)).getMinutes());
+    }
+    if (task.category === null) {
+        document.querySelector("#taskcategory").value = "default";
+    } else {
+        document.querySelector("#taskcategory").value = task.category;
+    }
+    document.querySelector("#newtask").value = task.name;
+    document.querySelector("#newtask").focus();
+}
+
+// formulaire de connexion
 function login_submit(event) {
     let username = document.querySelector("#username").value;
     let password = document.querySelector("#password").value;
@@ -343,6 +389,7 @@ function login_submit(event) {
     }
 }
 
+// formulaire d'inscription
 function signin(event) {
     let username = document.querySelector("#username").value;
     let password = document.querySelector("#password").value;
@@ -360,5 +407,6 @@ function signin(event) {
     }
 }
 
+// on startup
 fix_storage();
 session.load_tasks();
