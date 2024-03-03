@@ -1,24 +1,6 @@
 <main>
     <script>
         document.body.setAttribute("localisation", "none");
-
-        function signin(event) {
-            let username = document.querySelector("#username").value;
-            let password = document.querySelector("#password").value;
-            let name = document.querySelector("#name").value;
-            let lastname = document.querySelector("#lastname").value;
-            let email = document.querySelector("#email").value;
-            if (session.signin(name, lastname, username, email, password)) {
-                event.preventDefault();
-                document.querySelector("#username").setAttribute("style", "border-color: var(--menu-magenta)");
-                document.querySelector("#wrong").setAttribute("style", "opacity: 1");
-                setTimeout(() => {
-                    document.querySelector("#username").removeAttribute("style");
-                    document.querySelector("#wrong").setAttribute("style", "opacity: 0");
-                }, 1000);
-            }
-            console.log(event);
-        }
     </script>
     <form class="box-draw column-stretch width30 shadow1" onsubmit="signin(event)">
         <h1 class="centertext morph">S'enregitrer</h1>

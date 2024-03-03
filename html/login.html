@@ -1,22 +1,6 @@
 <main class="centerdiv">
     <script>
         document.body.setAttribute("localisation", "none");
-
-        function login_submit(event) {
-            let username = document.querySelector("#username").value;
-            let password = document.querySelector("#password").value;
-            if (session.login(username, password)) {
-                event.preventDefault();
-                document.querySelector("#username").setAttribute("style", "border-color: var(--menu-magenta)");
-                document.querySelector("#password").setAttribute("style", "border-color: var(--menu-magenta)");
-                document.querySelector("#wrong").setAttribute("style", "opacity: 1");
-                setTimeout(() => {
-                    document.querySelector("#username").removeAttribute("style");
-                    document.querySelector("#password").removeAttribute("style");
-                    document.querySelector("#wrong").setAttribute("style", "opacity: 0");
-                }, 1000);
-            }
-        }
     </script>
     <form class="box-draw column-stretch width30 shadow1" onsubmit="login_submit(event)">
         <h1 class="centertext morph">Se connecter</h1>
